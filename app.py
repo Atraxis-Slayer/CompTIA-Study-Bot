@@ -1,3 +1,11 @@
+# --- SQLITE FIX FOR STREAMLIT ---
+import sys
+try:
+    __import__('pysqlite3')
+    sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+except ImportError:
+    pass
+
 import os
 import streamlit as st
 from langchain_community.document_loaders import PyPDFLoader
@@ -6,12 +14,16 @@ from langchain_community.vectorstores import Chroma
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 
-# These are the imports that usually cause the ModuleNotFoundError if 'langchain' is missing
-from langchain.chains import create_history_aware_retriever, create_retrieval_chain
+# Explicitly use the full sub-module paths to avoid ModuleNotFoundError
+from langchain.chains.history_aware_retriever import create_history_aware_retriever
+from langchain.chains.retrieval import create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
 
-# --- PAGE CONFIG ---
 st.set_page_config(page_title="CompTIA A+ Study Bot", layout="wide")
+
+# --- REST OF THE CODE REMAINS THE SAME ---
+# (Keep your build_vectorstore, build_study_chain, and UI logic here)
+# ...
 
 # --- 1. SECURE API KEY ---
 # Looks for secret in Streamlit Cloud settings or local .env
